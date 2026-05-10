@@ -85,7 +85,7 @@ public class ServerApp {
             String responseBody = response.body();
             
             
-            System.out.println("DEBUG RAW OLLAMA: " + responseBody);
+           // System.out.println("DEBUG RAW OLLAMA: " + responseBody); // pus pentru debugging 
             // Extragem doar valoarea câmpului "response" din JSON-ul primit
             // (Metodă simplă pure-Java)
             String cautaCheia = "\"response\":\"";
