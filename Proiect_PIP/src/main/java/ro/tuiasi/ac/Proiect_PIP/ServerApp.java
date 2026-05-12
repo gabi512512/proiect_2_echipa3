@@ -45,19 +45,34 @@ public class ServerApp {
 
         } catch (IOException ex) {
             System.out.println("Eroare la pornirea serverului: " + ex.getMessage());
-        }
+        }   
     }
 
     // Metoda care comunică efectiv cu Ollama
     public static String trimiteCatreOllama(String comandaUtilizator) {
         try {
             // Construim memoria injectată și setările stricte (modul RAW)
-            String promptRaw = "<|system|>\\nEști un sistem strict care returnează doar comenzi. Fără explicații.</s>\\n" +
-                               "<|user|>\\nSTATUS</s>\\n<|assistant|>\\nSistem operațional.</s>\\n" +
-                               "<|user|>\\nPORNESTE WI-FI</s>\\n<|assistant|>\\nwi-fi pornit.</s>\\n" +
-                               "<|user|>\\nOPRESTE WI-FI</s>\\n<|assistant|>\\nwi-fi oprit.</s>\\n" +
-                               "<|user|>\\n" + comandaUtilizator + "</s>\\n<|assistant|>\\n";
-
+        	String promptRaw = "<|system|>\n" +
+                    " You are a strict sistem which returns only predefine orders. " +
+                    "If the user gives ANY IMPUT that dont contain the folowing 'status', 'wifi' or 'bluetooth'," +
+                    "responde EXCLUSIVELY with: 'Eroare: Comanda nepermisa.' Without explications and follow strictly those rule.</s>\n" +
+                    "<|user|>\nstatus</s>\n<|assistant|>\nthe sistem is operating.</s>\n" +
+                    "<|user|>\nopen wifi</s>\n<|assistant|>\nwi-fi on.</s>\n" +
+                    "<|user|>\nclose wi-fi</s>\n<|assistant|>\nwi-fi off.</s>\n" +
+                    "<|user|>\nopen bluetooth</s>\n<|assistant|>\nbluetooth on.</s>\n" +
+                    "<|user|>\nclose bluetooth</s>\n<|assistant|>\nbluetooth off.</s>\n" +
+                    "<|user|>\scmcjzx djashsdf</s>\n<|assistant|>\nerror: Order not accepted.</s>\n" +
+                    "<|user|>\scmcjzx</s>\n<|assistant|>\nerror: Order not accepted.</s>\n" +
+                    "<|user|>\nopen fsadgdsfgz</s>\n<|assistant|>\nerror: Order not accepted.</s>\n" +
+                    "<|user|>\nclose dzvzscxbv</s>\n<|assistant|>\nerror: Order not accepted.</s>\n" +
+                    "<|user|>\n" + comandaUtilizator + "</s>\n<|assistant|>\n";
+        	
+        	String promptEscaped = promptRaw
+        	        .replace("\\", "\\\\")   // Escapăm backslash-ul
+        	        .replace("\"", "\\\"")   // Escapăm ghilimelele
+        	        .replace("\n", "\\n")    // Transformăm enter-ul fizic în textul "\n"
+        	        .replace("\r", "\\r");   // Pentru compatibilitate Windows
+        	
             String jsonPayload = String.format(
                 "{" +
                 "\"model\": \"tinyllama\"," +
@@ -70,7 +85,7 @@ public class ServerApp {
                     "\"stop\": [\"</s>\", \"\\n\", \"<|user|>\"]" +
                 "}" +
                 "}", 
-                promptRaw
+                promptEscaped
             );
 
             // Trimitem request-ul HTTP
@@ -88,16 +103,29 @@ public class ServerApp {
            // System.out.println("DEBUG RAW OLLAMA: " + responseBody); // pus pentru debugging 
             // Extragem doar valoarea câmpului "response" din JSON-ul primit
             // (Metodă simplă pure-Java)
+         // ... după ce primești responseBody ...
+
             String cautaCheia = "\"response\":\"";
             int indexStart = responseBody.indexOf(cautaCheia);
-            
+
             if (indexStart != -1) {
                 indexStart += cautaCheia.length();
                 int indexEnd = responseBody.indexOf("\"", indexStart);
+                
+                // Extragem textul brut
                 String textFinal = responseBody.substring(indexStart, indexEnd);
                 
-                // Curățăm posibilele caractere de linie nouă adăugate de JSON
-                return textFinal.replace("\\n", "").trim(); 
+                // Curățăm TOATE secvențele de tip escape pe care Ollama le trimite înapoi
+                textFinal = textFinal.replace("\\n", "")
+                                     .replace("\\r", "")
+                                     .replace("\\\"", "\"")
+                                     .trim();
+                
+                // DEBUG: Vezi exact ce a rămas după curățare
+                System.out.println("Text procesat: [" + textFinal + "]");
+                
+                return textFinal;
+            
             }
 
             return "EROARE: Format de răspuns invalid de la AI.";

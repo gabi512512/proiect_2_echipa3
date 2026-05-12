@@ -7,7 +7,7 @@ public class App {
 
 	public static void main(String[] args) {
 		// IMPORTANT: Aici pui adresa IP a laptopului 1 (Serverul)
-		String ipServer = "10.145.44.158"; // EXEMPLU - Va trebui să o modifici!
+		String ipServer = "192.168.59.28"; // EXEMPLU - Va trebui să o modifici!
 		int port = 5000;
 
 		try (Socket socket = new Socket(ipServer, port)) {
