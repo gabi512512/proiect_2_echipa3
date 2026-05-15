@@ -7,7 +7,7 @@ public class App {
 
 	public static void main(String[] args) {
 		// IMPORTANT: Aici pui adresa IP a laptopului 1 (Serverul)
-		String ipServer = "192.168.59.28"; // EXEMPLU - Va trebui să o modifici!
+		String ipServer = "localhost"; //Exemplu:192.168.49.213-camin///192.168.49.28-facultate 
 		int port = 5000;
 
 		try (Socket socket = new Socket(ipServer, port)) {
@@ -23,7 +23,7 @@ public class App {
 
 			while (true) {
 				// Citești de la tastatură
-				text = consola.readLine();
+				text = consola.readLine(); 
 
 				// Trimiți către server
 				writer.println(text);

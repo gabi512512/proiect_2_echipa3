@@ -7,7 +7,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class ServerApp {
-    public static void main(String[] args) {
+    public static void main(String[] args) { 
         int port = 5000; // Portul pe care serverul va asculta
 
         try (ServerSocket serverSocket = new ServerSocket(port)) {
@@ -15,7 +15,7 @@ public class ServerApp {
 
             // Programul se blochează aici și așteaptă conectarea unui client
             Socket socket = serverSocket.accept();
-            System.out.println("Un client s-a conectat!");
+            System.out.println("Un client s-a conectat!");  
 
             // Fluxuri pentru citirea și trimiterea datelor
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -55,17 +55,17 @@ public class ServerApp {
         	String promptRaw = "<|system|>\n" +
                     " You are a strict sistem which returns only predefine orders. " +
                     "If the user gives ANY IMPUT that dont contain the folowing 'status', 'wifi' or 'bluetooth'," +
-                    "responde EXCLUSIVELY with: 'Eroare: Comanda nepermisa.' Without explications and follow strictly those rule.</s>\n" +
+                    "responde EXCLUSIVELY with: 'error: Order not accepted.' Without explications and follow strictly those rule.</s>\n" +
                     "<|user|>\nstatus</s>\n<|assistant|>\nthe sistem is operating.</s>\n" +
-                    "<|user|>\nopen wifi</s>\n<|assistant|>\nwi-fi on.</s>\n" +
-                    "<|user|>\nclose wi-fi</s>\n<|assistant|>\nwi-fi off.</s>\n" +
-                    "<|user|>\nopen bluetooth</s>\n<|assistant|>\nbluetooth on.</s>\n" +
-                    "<|user|>\nclose bluetooth</s>\n<|assistant|>\nbluetooth off.</s>\n" +
+                    "<|user|>\nopen wifi</s>\n<|assistant|>\nwi-fi_on.</s>\n" +
+                    "<|user|>\nclose wifi</s>\n<|assistant|>\nwi-fi_off.</s>\n" +
+                    "<|user|>\nopen bluetooth</s>\n<|assistant|>\nbluetooth_on.</s>\n" +
+                    "<|user|>\nclose bluetooth</s>\n<|assistant|>\nbluetooth_off.</s>\n" +
                     "<|user|>\scmcjzx djashsdf</s>\n<|assistant|>\nerror: Order not accepted.</s>\n" +
                     "<|user|>\scmcjzx</s>\n<|assistant|>\nerror: Order not accepted.</s>\n" +
                     "<|user|>\nopen fsadgdsfgz</s>\n<|assistant|>\nerror: Order not accepted.</s>\n" +
                     "<|user|>\nclose dzvzscxbv</s>\n<|assistant|>\nerror: Order not accepted.</s>\n" +
-                    "<|user|>\n" + comandaUtilizator + "</s>\n<|assistant|>\n";
+                    "<|user|>\n" + comandaUtilizator.trim().toLowerCase() + "</s>\n<|assistant|>\n";
         	
         	String promptEscaped = promptRaw
         	        .replace("\\", "\\\\")   // Escapăm backslash-ul
@@ -112,6 +112,8 @@ public class ServerApp {
                 indexStart += cautaCheia.length();
                 int indexEnd = responseBody.indexOf("\"", indexStart);
                 
+                
+                System.out.println("RAspunsul modelului "+responseBody);
                 // Extragem textul brut
                 String textFinal = responseBody.substring(indexStart, indexEnd);
                 
