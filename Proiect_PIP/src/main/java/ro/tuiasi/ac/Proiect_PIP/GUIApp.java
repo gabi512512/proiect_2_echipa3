@@ -22,20 +22,66 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.scene.layout.HBox;
 
+/**
+ * Clasa GUIApp reprezintă interfața grafică JavaFX
+ * pentru aplicația PIP.
+ *
+ * Interfața simulează un telefon mobil și permite
+ * controlul funcțiilor:
+ * - Wi-Fi
+ * - Bluetooth
+ * - Lanternă
+ *
+ * Comunicarea cu serverul se realizează prin socket TCP.
+ *
+ * Serverul trimite răspunsuri care actualizează
+ * imaginile și stările afișate în interfață.
+ *
+ * @author Student
+ * @version 1.0
+ */
+
 
 
 public class GUIApp extends Application {
 
+	 /**
+     * Socket utilizat pentru conexiunea cu serverul.
+     */
 	private Socket socket;
+	/**
+     * Flux pentru trimiterea comenzilor.
+     */
     private PrintWriter out;
+    /**
+     * Flux pentru citirea mesajelor primite.
+     */
     private BufferedReader in;
+    /**
+     * Variabilă care indică dacă aplicația este conectată.
+     */
     private boolean esteConectat = false;
+    /**
+     * Metoda principală JavaFX.
+     *
+     * Inițializează:
+     * - imaginile
+     * - butoanele
+     * - etichetele
+     * - conexiunea la server
+     *
+     * @param primaryStage fereastra principală JavaFX
+     */
     @Override
     public void start(Stage primaryStage) {
         
     	
     	
-        //  Pregătim imaginile
+    	 /**
+         * Metoda principală de lansare JavaFX.
+         *
+         * @param args argumentele aplicației
+         */
         Image imagineBackground = new Image("file:.\\resurse\\new-iphone-pro-blue-titanium-smartphone-mockup-screen-front-back-view-editorial-vector-290816480.jpg");
         Image imagineWI_FI = new Image("file:.\\resurse\\wi-fi_off.png");
         Image imagineBluetooth = new Image("file:.\\resurse\\bluetooth_off.png");
@@ -46,7 +92,7 @@ public class GUIApp extends Application {
         vizualizatorImagine.setFitWidth(500); 
         vizualizatorImagine.setPreserveRatio(true);
         
-        // Configurăm vizualizatoarele pentru iconițe
+        
         ImageView iconWiFi = new ImageView(imagineWI_FI);
         iconWiFi.setFitWidth(50);
         iconWiFi.setPreserveRatio(true);
@@ -60,44 +106,44 @@ public class GUIApp extends Application {
         iconLanterna.setPreserveRatio(true);
         
         ImageView iconButon = new ImageView(imagineButon);
-        iconButon.setFitWidth(20); // O facem mică să încapă în buton
+        iconButon.setFitWidth(20); 
         iconButon.setPreserveRatio(true);
 		
-        //  Creăm Label-urile și setăm imaginile lângă text
+        
         Label labelWI_FI = new Label("off");
-        labelWI_FI.setGraphic(iconWiFi); // Pune iconița în stânga textului
-        labelWI_FI.setGraphicTextGap(10); // Distanța dintre iconiță și text
+        labelWI_FI.setGraphic(iconWiFi);
+        labelWI_FI.setGraphicTextGap(10); 
         labelWI_FI.setTextFill(Color.WHITE);
         labelWI_FI.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         
         Label labelBluetooth = new Label("off");
-        labelBluetooth.setGraphic(iconBluetooth); // Pune iconița în stânga textului
+        labelBluetooth.setGraphic(iconBluetooth); 
         labelBluetooth.setGraphicTextGap(10); 
         labelBluetooth.setTextFill(Color.WHITE);
         labelBluetooth.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         
         Label labelLanterna = new Label("off");
-        labelLanterna.setGraphic(iconLanterna); // Pune iconița în stânga textului
+        labelLanterna.setGraphic(iconLanterna); 
         labelLanterna.setGraphicTextGap(10);
         labelLanterna.setTextFill(Color.WHITE);
         labelLanterna.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         
-        //  Grupăm label-urile într-un container mic pentru a le muta împreună pe ecranul telefonului
-        VBox statusContainer = new VBox(10); // 10 pixeli între rânduri
+        
+        VBox statusContainer = new VBox(10); 
         statusContainer.setAlignment(Pos.CENTER_LEFT);
         statusContainer.getChildren().addAll(labelWI_FI ,labelLanterna, labelBluetooth);
         
-        // Poziționăm întreg grupul pe ecranul mock-up-ului
+        
         statusContainer.setTranslateX(350); 
         statusContainer.setTranslateY(-40);
-        statusContainer.setPickOnBounds(false); // Permite click-uri prin container dacă e cazul
+        statusContainer.setPickOnBounds(false); 
 
-        //  StackPane-ul pentru suprapunere
+    
         StackPane containerImagine = new StackPane();
-        // Adăugăm fundalul și apoi containerul cu label-uri
+       
         containerImagine.getChildren().addAll(vizualizatorImagine, statusContainer);
 
-        //  Partea de jos (Input-ul)
+       
         TextField casetaText = new TextField();
         casetaText.setPromptText("Scrie comanda...");
         casetaText.setMaxWidth(300);
@@ -108,7 +154,7 @@ public class GUIApp extends Application {
         butonAction.setOnAction(e -> {
             String mesaj = casetaText.getText();
             if (!mesaj.isEmpty() && esteConectat) {
-                out.println(mesaj); // Trimitem doar mesajul
+                out.println(mesaj); 
                 casetaText.clear();
                 
                 if (mesaj.equalsIgnoreCase("exit")) {
@@ -119,13 +165,13 @@ public class GUIApp extends Application {
             }
         });
         
-        HBox randInput = new HBox(10); // 10 pixeli distanță între ele
-        randInput.setAlignment(Pos.CENTER); // Le centrăm pe orizontală
+        HBox randInput = new HBox(10); 
+        randInput.setAlignment(Pos.CENTER); 
         randInput.getChildren().addAll(casetaText, butonAction);
         
         VBox layoutPrincipal = new VBox(20); 
         layoutPrincipal.setAlignment(Pos.CENTER); 
-        // Înlocuim casetaText și butonAction cu randInput
+        
         layoutPrincipal.getChildren().addAll(containerImagine, randInput);
         Scene scena = new Scene(layoutPrincipal, 600, 750);
         primaryStage.setTitle("Interfață aplicatie");
@@ -133,17 +179,43 @@ public class GUIApp extends Application {
         conectareServer(labelWI_FI, iconWiFi, labelBluetooth, iconBluetooth, labelLanterna, iconLanterna);
         primaryStage.show();
         primaryStage.setOnCloseRequest(event -> {
-            inchideResurse(); // Metoda care închide socket-ul, out și in
+            inchideResurse(); 
             System.exit(0);
         });
     }
+    
+    /**
+     * Metoda principală de lansare JavaFX.
+     *
+     * @param args argumentele aplicației
+     */
+
 
     public static void main(String[] args) {
         launch(args);
     }
+    
+    /**
+     * Actualizează interfața grafică în funcție
+     * de răspunsul primit de la server.
+     *
+     * Exemple de răspunsuri:
+     * - wi-fi_on
+     * - wi-fi_off
+     * - bluetooth_on
+     * - flashlight_off
+     *
+     * @param raspuns răspunsul primit de la server
+     * @param lWifi label pentru Wi-Fi
+     * @param iWifi imagine Wi-Fi
+     * @param lBt label Bluetooth
+     * @param iBt imagine Bluetooth
+     * @param lLant label Lanternă
+     * @param iLant imagine Lanternă
+     */
     private void actualizeazaInterfata(String raspuns, Label lWifi, ImageView iWifi, Label lBt, ImageView iBt, Label lLant, ImageView iLant) {
         try {
-            // Verificăm dacă răspunsul conține caracterul de separare
+          
             if (!raspuns.contains("_")) return;
 
             String tip = raspuns.substring(0, raspuns.indexOf("_"));
@@ -165,6 +237,24 @@ public class GUIApp extends Application {
             System.err.println("Eroare la încărcarea imaginii: " + e.getMessage());
         }
     }
+   
+    /**
+     * Actualizează starea unei componente grafice.
+     *
+     * Schimbă:
+     * - textul labelului
+     * - imaginea
+     * - culoarea textului
+     *
+     * Verde pentru ON.
+     * Alb pentru OFF.
+     *
+     * @param label labelul care trebuie actualizat
+     * @param view imaginea asociată
+     * @param nouaImagine noua imagine
+     * @param stare noua stare
+     */
+    
     private void actualizeazaStare(Label label, ImageView view, Image nouaImagine, String stare) {
     	
     	if (nouaImagine == null || nouaImagine.isError()) {
@@ -176,7 +266,7 @@ public class GUIApp extends Application {
         view.setImage(nouaImagine);
         view.setFitWidth(50);
         view.setPreserveRatio(true);
-        // Verificăm dacă textul conține "on" (ex: wi-fi_on)
+       
         if(stare.toLowerCase().contains("_on")) {
             label.setTextFill(Color.LIME);
         } else {
@@ -184,6 +274,24 @@ public class GUIApp extends Application {
         }
     
     }
+    
+    /**
+     * Creează conexiunea permanentă cu serverul.
+     *
+     * Rulează într-un thread separat și ascultă
+     * continuu mesajele primite de la server.
+     *
+     * La primirea unui mesaj,
+     * interfața este actualizată automat.
+     *
+     * @param lWifi label Wi-Fi
+     * @param iWifi imagine Wi-Fi
+     * @param lBt label Bluetooth
+     * @param iBt imagine Bluetooth
+     * @param lLant label Lanternă
+     * @param iLant imagine Lanternă
+     */
+    
     private void conectareServer(Label lWifi, ImageView iWifi, Label lBt, ImageView iBt, Label lLant, ImageView iLant) {
         Thread listenerThread = new Thread(() -> {
             try {
@@ -201,7 +309,7 @@ public class GUIApp extends Application {
                         break;
                     }
 
-                    // Actualizăm UI-ul ori de câte ori serverul trimite ceva
+                    
                     javafx.application.Platform.runLater(() -> {
                         actualizeazaInterfata(msg, lWifi, iWifi, lBt, iBt, lLant, iLant);
                     });
@@ -217,6 +325,16 @@ public class GUIApp extends Application {
         listenerThread.start();
     }
 
+    /**
+     * Închide toate resursele utilizate:
+     * - socket
+     * - fluxuri de date
+     *
+     * Este apelată la:
+     * - închiderea aplicației
+     * - comanda exit
+     */
+    
     private void inchideResurse() {
         try {
             esteConectat = false;

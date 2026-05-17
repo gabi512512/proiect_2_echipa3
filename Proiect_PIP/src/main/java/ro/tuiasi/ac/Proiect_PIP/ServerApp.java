@@ -6,7 +6,40 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+/**
+ * Clasa ServerApp reprezintă serverul principal
+ * al aplicației PIP.
+ *
+ * Serverul:
+ * - acceptă conexiuni TCP
+ * - primește comenzi de la client
+ * - trimite comenzile către modelul AI Ollama
+ * - returnează răspunsurile către client
+ *
+ * Comunicarea se realizează pe portul 5000.
+ *
+ * Modelul utilizat:
+ * - TinyLlama prin Ollama API
+ *
+ * @author Student
+ * @version 1.0
+ */
+
 public class ServerApp {
+	/**
+     * Metoda principală a serverului.
+     *
+     * Creează serverul TCP și așteaptă conectarea
+     * unui client.
+     *
+     * Pentru fiecare comandă primită:
+     * - trimite mesajul către Ollama
+     * - primește răspunsul AI
+     * - transmite răspunsul clientului
+     *
+     * @param args argumentele din linia de comandă
+     */
+	
     public static void main(String[] args) { 
         int port = 5000; // Portul pe care serverul va asculta
 
@@ -47,11 +80,31 @@ public class ServerApp {
             System.out.println("Eroare la pornirea serverului: " + ex.getMessage());
         }   
     }
+    
+    /**
+     * Trimite comanda utilizatorului către modelul AI Ollama.
+     *
+     * Metoda construiește un prompt RAW strict
+     * care permite doar comenzile:
+     * - status
+     * - open wifi
+     * - close wifi
+     * - open bluetooth
+     * - close bluetooth
+     *
+     * Orice altă comandă generează:
+     * "error: Order not accepted."
+     *
+     * Comunicarea cu Ollama se face prin HTTP POST.
+     *
+     * @param comandaUtilizator comanda trimisă de client
+     * @return răspunsul procesat de modelul AI
+     */
 
     // Metoda care comunică efectiv cu Ollama
     public static String trimiteCatreOllama(String comandaUtilizator) {
         try {
-            // Construim memoria injectată și setările stricte (modul RAW)
+         
         	String promptRaw = "<|system|>\n" +
                     " You are a strict sistem which returns only predefine orders. " +
                     "If the user gives ANY IMPUT that dont contain the folowing 'status', 'wifi' or 'bluetooth'," +
@@ -100,11 +153,12 @@ public class ServerApp {
             String responseBody = response.body();
             
             
-           // System.out.println("DEBUG RAW OLLAMA: " + responseBody); // pus pentru debugging 
-            // Extragem doar valoarea câmpului "response" din JSON-ul primit
-            // (Metodă simplă pure-Java)
-         // ... după ce primești responseBody ...
-
+           /**
+            * Extragem doar valoarea câmpului "response" din JSON-ul primit
+            * (Metodă simplă pure-Java)
+            * după ce primești responseBody 
+            */
+            
             String cautaCheia = "\"response\":\"";
             int indexStart = responseBody.indexOf(cautaCheia);
 
